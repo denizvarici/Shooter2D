@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletManager : MonoBehaviour
-{    
+{
+    
+
     private Rigidbody2D bulletRigidbody;
-    [SerializeField] private float bulletSpeed;
-    [SerializeField] private int bulletDamage;
+    
+
+    private void Awake()
+    {
+        
+    }
     private void Start()
     {       
         bulletRigidbody = GetComponent<Rigidbody2D>();
-        bulletRigidbody.AddForce(transform.right * bulletSpeed, ForceMode2D.Impulse);
+        bulletRigidbody.AddForce(transform.right * GameSystemManager.Instance.bulletSpeed, ForceMode2D.Impulse);
     }
 
 
@@ -18,7 +24,11 @@ public class BulletManager : MonoBehaviour
     {
         if (collision.tag == "Enemy")
         {
-            collision.gameObject.GetComponent<EnemyManager>().TakeDamage(bulletDamage);
+            collision.gameObject.GetComponent<EnemyManager>().TakeDamage(GameSystemManager.Instance.bulletDamage);
+            Destroy(this.gameObject);
+        }
+        if (collision.tag == "Wall")
+        {
             Destroy(this.gameObject);
         }
     }

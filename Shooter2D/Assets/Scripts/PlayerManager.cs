@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class PlayerManager : MonoBehaviour
      Create Weapon System with scriptable objects
      Shop System Currency System (Maybe Unity Registry with Econmy?)
      Create an Enemy Manager
-     Change mouse cursor      
+     Change mouse cursor **DONE
      
         GAME WILL BE PLAYED AGAINST TIME
         BULLET SPEED
@@ -20,6 +21,8 @@ public class PlayerManager : MonoBehaviour
         DASH ABILITY
         MOVEMENT SPEED
         WILL BE ADDED SOON
+
+        OYUN ÝÇÝ XP SÝSTEMÝYLE BÝR ÝYÝ BÝR KÖTÜ ÖZELLÝK EKLE OYUN ANINDA SEÇÝLSÝN
     */
     //INPUT SYSTEM
     InputManager inputManager;
@@ -32,7 +35,8 @@ public class PlayerManager : MonoBehaviour
 
 
     //FEATURES
-    [SerializeField] private float playerSpeed;
+
+    
     private Vector2 moveDirection;
 
     //AIM and SHOOT
@@ -44,6 +48,9 @@ public class PlayerManager : MonoBehaviour
     //MuzzleEffect
     private Animator muzzleAnim;
 
+    //GUN SYSTEM TESTING
+    [SerializeField] private WeaponSO currentWeapon;
+
 
     #region Awake,OnEnable,Disable
     private void Awake()
@@ -51,7 +58,7 @@ public class PlayerManager : MonoBehaviour
         inputManager = new InputManager();
         aimTransform = transform.Find("Aim");
         muzzleAnim = GameObject.Find("MuzzleEffect").GetComponent<Animator>();
-        //bulletWay = transform.Find("BulletWay");
+        
     }
     private void OnEnable()
     {
@@ -78,15 +85,7 @@ public class PlayerManager : MonoBehaviour
     void Update()
     {
         Aim();
-        if (shootInput.WasPressedThisFrame())
-        {
-            Debug.Log("Ateþ edildi!");
-            muzzleAnim.SetTrigger("Shoot");
-            GameObject bulletObject = Instantiate(bulletPrefab, bulletWay.position, aimTransform.rotation);
-            //bulletObject.GetComponent<Rigidbody2D>().AddForce(bulletWay.right * bulletSpeed,ForceMode2D.Impulse);
-            CameraShake.Instance.ShakeCamera(1f, .1f);
-            
-        }
+        
     }
 
     private void FixedUpdate()
@@ -103,7 +102,7 @@ public class PlayerManager : MonoBehaviour
         playerAnimator.SetFloat("Vertical", moveDirection.y);
         playerAnimator.SetFloat("Speed", moveDirection.sqrMagnitude);
         //Move 8Way FixedUpdate
-        playerRB.velocity = moveDirection * playerSpeed;
+        playerRB.velocity = moveDirection * GameSystemManager.Instance.playerSpeed;
     }
 
     void Aim()
@@ -126,5 +125,26 @@ public class PlayerManager : MonoBehaviour
         
     }
 
-    
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            SceneManager.LoadScene("EndGameScene");
+        }
+        
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Boundary")
+        {
+            SceneManager.LoadScene("EndGameScene");
+        }
+    }
+
+
+
+
+
+
 }
